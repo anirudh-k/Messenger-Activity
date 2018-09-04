@@ -7,20 +7,28 @@ import time
 message_counts = {}
 
 recipients = ['aditya', 'alice', 'amal', 'christopher', 'edridge', 'grace', 'kavin', 'phillip', 'raghav', 'sajid', 'sangeetha', 'sarah', 'talitha', 'vishwa', 'yuliya']
+# recipients = ['gc']
 
 oldest_timestamp = int(time.time())
+newest_timestamp = 0
 
 for name in recipients:
 	filename = 'messages/' + name + '_message.json'
 	with open(filename) as f:
 		data = json.load(f)
-		old_stamp_msg = int(data['messages'].pop()['timestamp_ms']) / 1000
-		if old_stamp_msg < oldest_timestamp:
-			oldest_timestamp = old_stamp_msg
+		for msg in data['messages']:
+			stamp_msg = msg['timestamp_ms'] / 1000
+			if stamp_msg < oldest_timestamp:
+				oldest_timestamp = stamp_msg
+			if stamp_msg > newest_timestamp:
+				# print(stamp_msg)
+				newest_timestamp = stamp_msg
 
 oldest_timestamp_datetime = datetime.utcfromtimestamp(oldest_timestamp)
-# oldest_timestamp_datetime = datetime.strptime('1 Sep 2015 12:00AM', '%d %b %Y %I:%M%p')
-newest_timestamp = datetime.utcfromtimestamp(1535260101)
+# oldest_timestamp_datetime = datetime.strptime('7 Aug 2018 4:00AM', '%d %b %Y %I:%M%p')
+
+newest_timestamp_datetime = datetime.utcfromtimestamp(newest_timestamp)
+# newest_timestamp_datetime = datetime.strptime('11 Aug 2018 5:00AM', '%d %b %Y %I:%M%p')
 
 for name in recipients:
 	filename = 'messages/' + name + '_message.json'
@@ -37,7 +45,7 @@ for name in recipients:
 		messages_sorted.reverse()
 		cur_timestamp = datetime.utcfromtimestamp(int(messages_sorted.pop()["timestamp_ms"] / 1000))
 		count = 0
-		while prev_window_close < newest_timestamp:
+		while prev_window_close < newest_timestamp_datetime:
 			if len(messages_sorted) > 0:
 				if cur_timestamp >= prev_window_open and cur_timestamp < prev_window_close:
 					count += 1
@@ -57,7 +65,7 @@ for name in recipients:
 			else:
 				if cur_timestamp >= prev_window_open and cur_timestamp < prev_window_close:
 					count += 1
-					cur_timestamp = newest_timestamp + timedelta(days=10)
+					cur_timestamp = newest_timestamp_datetime + timedelta(days=10)
 				else:
 					if prev_window_close in message_counts:
 							message_counts[prev_window_close].append(count)
@@ -80,4 +88,4 @@ with open('message_windows.csv', 'wb') as msg_counts:
 	writer = csv.writer(msg_counts, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 	writer.writerow(['window_close'] + recipients)
 	for windows, counts in sorted(message_counts.items()):
-		writer.writerow([windows] + counts)
+		writer.writerow([windows - timedelta(hours=5)] + counts)

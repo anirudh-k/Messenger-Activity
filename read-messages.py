@@ -7,7 +7,7 @@ import time
 message_counts = {}
 
 recipients = ['aditya', 'alice', 'amal', 'christopher', 'edridge', 'grace', 'kavin', 'phillip', 'raghav', 'sajid', 'sangeetha', 'sarah', 'talitha', 'vishwa', 'yuliya']
-# recipients = ['gc']
+# recipients = ['alice']
 
 oldest_timestamp = int(time.time())
 newest_timestamp = 0

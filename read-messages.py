@@ -37,7 +37,7 @@ for name in recipients:
 		messages_unordered = data["messages"]
 		messages_sorted = sorted(messages_unordered, key=lambda message: message["timestamp_ms"])
 
-		window_size = timedelta(days=1)
+		window_size = timedelta(hours=12)
 
 		prev_window_open = oldest_timestamp_datetime
 		prev_window_close = prev_window_open + window_size
